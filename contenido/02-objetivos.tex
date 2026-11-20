@@ -1,0 +1,40 @@
+% ============================================================================
+%  CAPÍTULO II: OBJETIVOS, ALCANCE Y LÍMITES
+% ============================================================================
+
+\section{Objetivos del trabajo}
+
+\subsection{Objetivo general}
+
+[Describir el objetivo general del trabajo.]
+
+\subsection{Objetivos específicos}
+
+\begin{enumerate}
+  \item Primer objetivo específico.
+  \item Segundo objetivo específico.
+  \item Tercer objetivo específico.
+\end{enumerate}
+
+\section{Tabla de ejemplo}
+
+Tabla con el formato APA definido en el preámbulo (booktabs, sin líneas
+verticales, interlineado sencillo):
+
+\begin{table}[H]
+  \centering
+  \caption{Materiales y herramientas utilizados}
+  \contenidoConFuente{%
+    \begin{tablaAPA}
+      \begin{tabular}{@{}L{3.6cm}L{8.2cm}L{3.2cm}@{}}
+        \toprule
+        \textbf{Recurso} & \textbf{Descripción} & \textbf{Versión} \\
+        \midrule
+        Debian GNU/Linux  & Sistema operativo base & 12 \\
+        Nginx             & Servidor web           & 1.26 \\
+        Samba AD DC       & Controlador de dominio & 4.19 \\
+        \bottomrule
+      \end{tabular}
+    \end{tablaAPA}%
+  }{Elaboración propia.}
+\end{table}
