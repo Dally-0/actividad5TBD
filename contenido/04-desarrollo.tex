@@ -4,114 +4,540 @@
 
 \section{Desarrollo del trabajo}
 
-\subsection{Figura de ejemplo}
+\subsection{Base de datos sobre la que se trabaja}
 
-Figura con título y línea FUENTE al estilo APA (usa el logo institucional
-incluido en \texttt{figuras/logo.png}):
+Las sentencias se ejecutaron directamente sobre la base de datos \texttt{universidad} del SGBD PostgreSQL (contenedor \texttt{postgres\_upds}, puerto \texttt{5432}). La base contiene las tablas relacionadas \texttt{docente}, \texttt{estudiante}, \texttt{materia} y \texttt{inscripcion} (10 docentes, 10 estudiantes, 10 materias y 20 inscripciones), con restricciones \texttt{PRIMARY KEY} en cada una y las \textit{foreign keys} \texttt{fk\_materia\_docente}, \texttt{fk\_inscripcion\_estudiante} y \texttt{fk\_inscripcion\_materia}. Además está vigente \texttt{UNIQUE (correo)} sobre \texttt{docente} (restricción \texttt{docente\_correo\_key}), y los campos \texttt{docente.nombre}, \texttt{docente.correo}, \texttt{docente.especialidad}, \texttt{estudiante.nombre}, \texttt{estudiante.correo} y \texttt{estudiante.fecha\_nacimiento} están definidos \texttt{NOT NULL}.
 
-\figuraAPA{fig:logo}{Logo institucional UPDS}{\includegraphics[width=0.35\textwidth]{logo.png}}{Universidad Privada Domingo Savio.}
-
-\subsection{Captura pendiente}
-
-Esta macro muestra un recuadro mientras la captura no exista en
-\texttt{figuras/}; cuando guardes la imagen con ese nombre, aparece
-automáticamente:
-
-\capturaAPA{fig:captura-ejemplo}{Ejemplo de captura de pantalla}{captura-ejemplo.png}{Pantalla de ejemplo del sistema.}
-
-\subsection{Bloque de código}
+Comando de conexión usado para las ejecuciones:
 
 \begin{lstlisting}[language=bash]
-# Comandos de ejemplo
-sudo apt update
-sudo systemctl restart nginx
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "<sentencia>"
 \end{lstlisting}
 
-\subsection{Terminal}
+\subsection{DDL - Lenguaje de Definición de Datos}
 
-\begin{lstlisting}[style=terminal]
-$ systemctl status nginx
-nginx.service - A high performance web server
-   Active: active (running)
+\subsubsection{CREATE TABLE \texttt{actividad5\_sede}}
+
+Script:
+\begin{lstlisting}[language=sql]
+CREATE TABLE actividad5_sede (
+    id_sede SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    ciudad VARCHAR(100)
+);
 \end{lstlisting}
 
-\subsection{Diagrama de arquitectura de red}
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "CREATE TABLE actividad5_sede (id_sede SERIAL PRIMARY KEY, nombre VARCHAR(100) NOT NULL, ciudad VARCHAR(100));"
+\end{lstlisting}
 
-Ejemplo de topología cliente–router–servidor (como en los informes reales):
+\noindent
+\textbf{Resultado esperado:} \texttt{CREATE TABLE} (tabla creada). \textbf{Resultado obtenido:} [captura].
 
-\figuraAPA{fig:red}{Arquitectura de red del laboratorio}{%
-  \begin{tikzpicture}[
-      nodo/.style={draw, rounded corners, minimum width=2.4cm,
-                   minimum height=0.9cm, align=center, font=\small},
-      nube/.style={draw, ellipse, align=center, font=\small, minimum width=2.2cm},
-      linea/.style={-Stealth, thick}]
-    \node[nodo] (pc) {Cliente};
-    \node[nodo, right=1.8cm of pc] (rtr) {Router\textbackslash 192.168.0.1};
-    \node[nube, right=1.8cm of rtr] (net) {Internet};
-    \node[nodo, below=1.4cm of rtr] (srv) {Servidor Debian};
-    \draw[linea] (pc) -- (rtr);
-    \draw[linea] (rtr) -- (net);
-    \draw[linea] (srv) -- (rtr);
-  \end{tikzpicture}%
-}{Elaboración propia.}
+\noindent
+\textbf{Explicación breve:} Se creó la tabla auxiliar \texttt{actividad5\_sede} con \texttt{id\_sede} como \texttt{SERIAL PRIMARY KEY} (restricción \texttt{PK}) y \texttt{nombre} como \texttt{NOT NULL}. \textbf{Ocurrió:} \texttt{CREATE TABLE} exitoso; \textbf{si fallara:} \texttt{ERROR} (\texttt{relation already exists} si existiera antes).
 
-\subsection{Diagrama de estados (autómata)}
+\medskip
 
-Ejemplo de máquina de estados finitos con transiciones etiquetadas:
+\subsubsection{ALTER TABLE \texttt{actividad5\_sede} - restricción UNIQUE \texttt{uq\_sede\_nombre}}
 
-\figuraAPA{fig:fsm}{Diagrama de estados de ejemplo}{%
-  \begin{tikzpicture}[
-      estado/.style={draw, circle, minimum size=1cm, font=\small},
-      linea/.style={-Stealth, thick},
-      nodo/.style={align=center}]
-    \node[estado] (q0) {$q_0$};
-    \node[estado, right=1.8cm of q0] (q1) {$q_1$};
-    \node[estado, accepting, right=1.8cm of q1] (q2) {$q_2$};
-    \draw[linea] (q0) -- node[above] {0} (q1);
-    \draw[linea] (q1) -- node[above] {1} (q2);
-    \draw[linea] (q1) to[bend left] node[above] {0} (q0);
-    % Si se rompe la línea siguiente, el estado inicial desaparece (nodos y
-    % posicionamiento relativos: siempre definir los nodos antes de usarlos).
-  \end{tikzpicture}%
-}{Elaboración propia.}
+Script:
+\begin{lstlisting}[language=sql]
+ALTER TABLE actividad5_sede ADD CONSTRAINT uq_sede_nombre UNIQUE (nombre);
+\end{lstlisting}
 
-\subsection{Diagrama de flujo}
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "ALTER TABLE actividad5_sede ADD CONSTRAINT uq_sede_nombre UNIQUE (nombre);"
+\end{lstlisting}
 
-\figuraAPA{fig:flujo}{Flujo de decisión de ejemplo}{%
-  \begin{tikzpicture}[
-      paso/.style={draw, rounded corners, minimum width=2.6cm, minimum height=0.9cm, align=center, font=\small},
-      decision/.style={draw, diamond, aspect=2, align=center, font=\small, inner sep=1pt},
-      linea/.style={-Stealth, thick}]
-    \node[paso] (ini) {Inicio};
-    \node[decision, below=1cm of ini] (d) {¿Servicio activo?};
-    \node[paso, below=1cm of d] (ok) {Continuar};
-    \node[paso, right=1.6cm of d] (err) {Reiniciar};
-    \draw[linea] (ini) -- (d);
-    \draw[linea] (d) -- node[right, font=\scriptsize] {sí} (ok);
-    \draw[linea] (d) -- node[above, font=\scriptsize] {no} (err);
-  \end{tikzpicture}%
-}{Elaboración propia.}
+\noindent
+\textbf{Resultado esperado:} \texttt{ALTER TABLE}. \textbf{Resultado obtenido:} [captura].
 
-\subsection{Casos que "siempre daban error" (prueba del fix)}
+\noindent
+\textbf{Explicación breve:} Se agregó al \texttt{ALTER} la restricción \texttt{UNIQUE} sobre \texttt{nombre}. \textbf{Ocurrió:} \texttt{ALTER TABLE} exitoso; \textbf{si fallara:} \texttt{ERROR} (ej. \texttt{column "nombre" contains duplicates} si existieran valores repetidos).
 
-El bloque siguiente usa flechas con la sintaxis moderna
-(\texttt{->}, \texttt{>=stealth}) y texto entre nodos. **Antes** del fix
-de babel (\texttt{\\shorthandoff\{<>\}} + librería \texttt{babel}) esto
-fallaba con \texttt{Argument of \\language@active@arg> has an extra \}}.
-Si compila, el fix funciona:
+\medskip
 
-\figuraAPA{fig:fix}{Prueba del fix babel/TikZ}{%
-  \begin{tikzpicture}[nodo/.style={draw, rounded corners, minimum width=2cm,
-                     minimum height=0.8cm, align=center}]
-    \node[nodo] (a) {Antes};
-    \node[nodo, right=2cm of a] (b) {Después};
-    \draw[->, >=stealth, thick] (a) -- node[above, font=\scriptsize]{tcp/80} (b);
-  \end{tikzpicture}%
-}{Elaboración propia.}
+\subsubsection{ALTER TABLE \texttt{actividad5\_sede} - restricción CHECK \texttt{chk\_sede\_ciudad}}
 
-{\footnotesize\textbf{Errores que ya no deben aparecer:} tokens activos de
-babel-spanish (\texttt{<}, \texttt{>}) rompiendo estilos de flecha;
-texto de nodos con acentos dentro de argumentos de macro (usar
-\texttt{\\shorthandoff} ya activo); depender de librerías no cargadas
-(automata: cargar \texttt{automata} si se usa \texttt{accepting};
-arrows.meta ya está cargado).\par}
+Script:
+\begin{lstlisting}[language=sql]
+ALTER TABLE actividad5_sede ADD CONSTRAINT chk_sede_ciudad CHECK (ciudad IS NULL OR ciudad <> '');
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "ALTER TABLE actividad5_sede ADD CONSTRAINT chk_sede_ciudad CHECK (ciudad IS NULL OR ciudad <> '');"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{ALTER TABLE}. \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se agregó una restricción \texttt{CHECK} sobre \texttt{ciudad} (no admite cadena vacía si no es \texttt{NULL}). \textbf{Ocurrió:} \texttt{ALTER TABLE} exitoso; \textbf{si fallara:} \texttt{ERROR} por violación del \texttt{CHECK} sobre datos existentes.
+
+\medskip
+
+\subsubsection{ALTER TABLE \texttt{estudiante} - nueva columna \texttt{telefono}}
+
+Script:
+\begin{lstlisting}[language=sql]
+ALTER TABLE estudiante ADD COLUMN telefono VARCHAR(20);
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "ALTER TABLE estudiante ADD COLUMN telefono VARCHAR(20);"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{ALTER TABLE} (columna \texttt{telefono} agregada). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se añadió la columna \texttt{telefono} a la tabla \texttt{estudiante}; luego se usó en el \texttt{UPDATE} de DML. \textbf{Ocurrió:} \texttt{ALTER TABLE} exitoso; \textbf{si fallara:} \texttt{ERROR} (\texttt{column "telefono" already exists}).
+
+\medskip
+
+\subsubsection{CREATE INDEX \texttt{idx\_actividad5\_sede\_nombre}}
+
+Script:
+\begin{lstlisting}[language=sql]
+CREATE INDEX idx_actividad5_sede_nombre ON actividad5_sede (nombre);
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "CREATE INDEX idx_actividad5_sede_nombre ON actividad5_sede (nombre);"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{CREATE INDEX} (índice creado). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se creó un índice sobre \texttt{actividad5\_sede.nombre} para acelerar búsquedas por nombre. \textbf{Ocurrió:} \texttt{CREATE INDEX} exitoso; \textbf{si fallara:} \texttt{ERROR} (ej. \texttt{relation already exists} si el índice ya existía).
+
+\medskip
+
+\subsubsection{DROP TABLE \texttt{actividad5\_sede}}
+
+Script:
+\begin{lstlisting}[language=sql]
+DROP TABLE actividad5_sede;
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "DROP TABLE actividad5_sede;"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{DROP TABLE} (tabla eliminada). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se eliminó la tabla auxiliar \texttt{actividad5\_sede} (y con ella su índice y restricciones). \textbf{Ocurrió:} \texttt{DROP TABLE} exitoso; \textbf{si fallara:} \texttt{ERROR} (\texttt{dependency} si hubiera objetos dependientes); \textbf{Si se revierte:} en modo \texttt{autocommit} la \texttt{DROP TABLE} no puede revertirse; si hubiera una \texttt{ROLLBACK} pendiente, la tabla volvería a existir.
+
+\medskip
+
+\subsection{DML - Lenguaje de Manipulación de Datos}
+
+\subsubsection{INSERT - Docentes: se insertó \texttt{Ana Garcia}}
+
+Script:
+\begin{lstlisting}[language=sql]
+INSERT INTO docente (nombre, correo, especialidad)
+VALUES ('Ana Garcia', 'ana.garcia@uni.edu', 'Ingeniería');
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "INSERT INTO docente (nombre, correo, especialidad) VALUES ('Ana Garcia', 'ana.garcia@uni.edu', 'Ingeniería');"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{INSERT 0 1} (1 fila insertada). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se insertó la fila de la docente \texttt{Ana Garcia} con correo \texttt{ana.garcia@uni.edu}. \textbf{Ocurrió:} \texttt{INSERT 0 1}; \textbf{si fallara:} \texttt{ERROR} por violación de \texttt{NOT NULL} o de \texttt{UNIQUE} \texttt{(correo)}; \textbf{si se revertía:} al \texttt{ROLLBACK} la fila no existiría.
+
+\medskip
+
+\subsubsection{INSERT - Error real cometido (docente \texttt{Ana Garcia II} con correo duplicado)}
+
+Script del intento erróneo:
+\begin{lstlisting}[language=sql]
+INSERT INTO docente (nombre, correo, especialidad)
+VALUES ('Ana Garcia II', 'ana.garcia@uni.edu', 'Ingeniería');
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "INSERT INTO docente (nombre, correo, especialidad) VALUES ('Ana Garcia II', 'ana.garcia@uni.edu', 'Ingeniería');"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{ERROR: duplicate key value violates unique constraint "docente\_correo\_key"} — \texttt{DETAIL: Key (correo)=(ana.garcia@uni.edu) already exists.}
+
+\noindent
+\textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación y corrección:} Se intentó insertar una segunda fila con el correo \texttt{ana.garcia@uni.edu} (ya asignado a \texttt{Ana Garcia} en la fila insertada anteriormente). Hubo un \textbf{error real}: \texttt{ERROR: duplicate key value violates unique constraint "docente\_correo\_key"}; \texttt{DETAIL: Key (correo)=(ana.garcia@uni.edu) already exists.} — sin fila insertada; \textbf{si se hubiera revertido la transacción}, igualmente no quedaba fila. Se corrigió re-insertando con un correo nuevo:
+
+\begin{lstlisting}[language=sql]
+INSERT INTO docente (nombre, correo, especialidad)
+VALUES ('Ana Garcia II', 'ana.garcia.ii@uni.edu', 'Ingeniería');
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado del INSERT corregido:} \texttt{INSERT 0 1} (1 fila insertada). \textbf{Resultado obtenido:} [captura].
+
+\medskip
+
+\subsubsection{INSERT - Estudiante \texttt{Pedro Quinteros}}
+
+Script:
+\begin{lstlisting}[language=sql]
+INSERT INTO estudiante (nombre, correo, fecha_nacimiento)
+VALUES ('Pedro Quinteros', 'pedro.quinteros@uni.edu', '1990-05-15');
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "INSERT INTO estudiante (nombre, correo, fecha_nacimiento) VALUES ('Pedro Quinteros', 'pedro.quinteros@uni.edu', '1990-05-15');"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{INSERT 0 1} (1 fila insertada). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se insertó el estudiante \texttt{Pedro Quinteros}. \textbf{Ocurrió:} \texttt{INSERT 0 1}; \textbf{si fallara:} \texttt{ERROR} por \texttt{NOT NULL} o \texttt{UNIQUE} en \texttt{correo}.
+
+\medskip
+
+\subsubsection{INSERT - Materia \texttt{Matemáticas Discretas} con subconsulta de recuperación}
+
+Script:
+\begin{lstlisting}[language=sql]
+INSERT INTO materia (nombre, creditos, id_docente)
+VALUES ('Matemáticas Discretas', 4,
+        (SELECT id_docente FROM docente WHERE correo = 'ana.garcia@uni.edu'));
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "INSERT INTO materia (nombre, creditos, id_docente) VALUES ('Matemáticas Discretas', 4, (SELECT id_docente FROM docente WHERE correo = 'ana.garcia@uni.edu'));"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{INSERT 0 1} (1 fila insertada; \texttt{id\_docente} resuelto por la subconsulta). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se insertó la materia \texttt{Matemáticas Discretas} (4 créditos) asignada al docente \texttt{Ana Garcia} usando una subconsulta para recuperar su \texttt{id\_docente}. \textbf{Ocurrió:} \texttt{INSERT 0 1}; \textbf{si fallara:} \texttt{ERROR} (ej. subconsulta sin resultados).
+
+\medskip
+
+\subsubsection{INSERT - Inscripción de Pedro con subconsultas de manipulación}
+
+Script:
+\begin{lstlisting}[language=sql]
+INSERT INTO inscripcion (id_estudiante, id_materia, fecha_inscripcion, nota)
+VALUES ((SELECT id_estudiante FROM estudiante WHERE correo = 'pedro.quinteros@uni.edu'),
+        (SELECT id_materia FROM materia WHERE nombre = 'Matemáticas Discretas'),
+        '2026-11-20', 7.5);
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "INSERT INTO inscripcion (id_estudiante, id_materia, fecha_inscripcion, nota) VALUES ((SELECT id_estudiante FROM estudiante WHERE correo = 'pedro.quinteros@uni.edu'), (SELECT id_materia FROM materia WHERE nombre = 'Matemáticas Discretas'), '2026-11-20', 7.5);"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{INSERT 0 1} (1 fila insertada). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se insertó la inscripción de Pedro en la materia \texttt{Matemáticas Discretas} (\texttt{nota} 7.5); los campos \texttt{id\_estudiante} y \texttt{id\_materia} se obtuvieron con subconsultas. \textbf{Ocurrió:} \texttt{INSERT 0 1}; \textbf{si fallara:} \texttt{ERROR} si una subconsulta retorna \texttt{NULL} o varias filas.
+
+\medskip
+
+\subsubsection{UPDATE - Teléfono de Pedro (subconsulta)}
+
+Script:
+\begin{lstlisting}[language=sql]
+UPDATE estudiante
+SET telefono = '4567890123'
+WHERE id_estudiante = (SELECT id_estudiante FROM estudiante WHERE correo = 'pedro.quinteros@uni.edu');
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "UPDATE estudiante SET telefono = '4567890123' WHERE id_estudiante = (SELECT id_estudiante FROM estudiante WHERE correo = 'pedro.quinteros@uni.edu');"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{UPDATE 1} (1 fila actualizada). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se actualizó el teléfono de Pedro mediante una subconsulta en el \texttt{WHERE} (uso de subconsultas para manipular datos). \textbf{Ocurrió:} \texttt{UPDATE 1}; \textbf{si fallara:} \texttt{UPDATE 0} si no hubiera coincidencias.
+
+\medskip
+
+\subsubsection{SELECT - Recuperar docentes con subconsulta \texttt{IN}}
+
+Script:
+\begin{lstlisting}[language=sql]
+SELECT d.nombre, d.correo
+FROM docente d
+WHERE d.id_docente IN (SELECT id_docente FROM materia WHERE creditos >= 5);
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "SELECT d.nombre, d.correo FROM docente d WHERE d.id_docente IN (SELECT id_docente FROM materia WHERE creditos >= 5);"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} 8 filas — \texttt{Carlos Mendoza (cmendoza@uni.edu)}, \texttt{Ana Gutierrez (agutierrez@uni.edu)}, \texttt{Roberto Torrez (rtorrez@uni.edu)}, \texttt{Elena Ramos (eramos@uni.edu)}, \texttt{Patricia Roca (proca@uni.edu)}, \texttt{Jorge Vargas (jvargas@uni.edu)}, \texttt{Fernando Aliaga (faliaga@uni.edu)}, \texttt{Lucia Rios (lrios@uni.edu)}. \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se recuperan los docentes cuyos \texttt{id\_docente} aparecen en una subconsulta que selecciona las \texttt{id\_docente} de \texttt{materia} con \texttt{creditos >= 5}. \textbf{Ocurrió:} 8 filas devueltas; \textbf{si fallara:} \texttt{0 filas} si no hay coincidencias.
+
+\medskip
+
+\subsubsection{SELECT - Recuperar estudiantes con subconsulta \texttt{IN} sobre inscripciones}
+
+Script:
+\begin{lstlisting}[language=sql]
+SELECT e.nombre, e.correo
+FROM estudiante e
+WHERE e.id_estudiante IN (SELECT id_estudiante FROM inscripcion WHERE nota >= 90);
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "SELECT e.nombre, e.correo FROM estudiante e WHERE e.id_estudiante IN (SELECT id_estudiante FROM inscripcion WHERE nota >= 90);"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} 6 filas — \texttt{Dally Gomez (dally@mail.com)}, \texttt{Camila Guzman (camila@mail.com)}, \texttt{Andrea Suarez (andrea@mail.com)}, \texttt{Joaquín Silva (joaquin@mail.com)}, \texttt{David Cruz (david@mail.com)}, \texttt{Valeria Rojas (valeria@mail.com)}. \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se recuperan los estudiantes inscritos en inscripciones con \texttt{nota >= 90} (subconsulta para recuperación). \textbf{Ocurrió:} 6 filas devueltas; \textbf{si fallara:} \texttt{0 filas} si no hay coincidencias.
+
+\medskip
+
+\subsubsection{DELETE - Estudiante \texttt{Pedro Quinteros}}
+
+Script:
+\begin{lstlisting}[language=sql]
+DELETE FROM estudiante WHERE correo = 'pedro.quinteros@uni.edu';
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "DELETE FROM estudiante WHERE correo = 'pedro.quinteros@uni.edu';"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{DELETE 1} (1 fila eliminada). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se eliminó el estudiante \texttt{Pedro Quinteros}; mediante \texttt{fk\_inscripcion\_estudiante} (\texttt{ON DELETE CASCADE}), su inscripción en \texttt{inscripcion} también se eliminó. \textbf{Ocurrió:} \texttt{DELETE 1}; \textbf{si fallara:} \texttt{DELETE 0} si no hubiera fila con ese \texttt{correo}.
+
+\medskip
+
+\subsection{TCL - Lenguaje de Control de Transacciones}
+
+\subsubsection{Transacción T1: INSERT + SAVEPOINT + ROLLBACK TO SAVEPOINT + COMMIT}
+
+Estado antes de la transacción:
+\begin{lstlisting}[language=sql]
+SELECT COUNT(*) AS docentes_antes FROM docente;
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "SELECT COUNT(*) AS docentes_antes FROM docente;"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{docentes\_antes: 12} (10 originales + \texttt{Ana Garcia} + \texttt{Ana Garcia II}). \textbf{Resultado obtenido:} [captura].
+
+Dentro de la transacción:
+\begin{lstlisting}[language=sql]
+START TRANSACTION;
+INSERT INTO docente (nombre, correo, especialidad)
+VALUES ('Patricia Mendoza', 'patricia.mendoza@uni.edu', 'Contabilidad');
+SELECT COUNT(*) AS docentes_dentro FROM docente;
+SAVEPOINT sv_tcl;
+UPDATE docente SET especialidad = 'Psicología' WHERE correo = 'patricia.mendoza@uni.edu';
+SELECT especialidad FROM docente WHERE correo = 'patricia.mendoza@uni.edu';
+ROLLBACK TO SAVEPOINT sv_tcl;
+SELECT especialidad FROM docente WHERE correo = 'patricia.mendoza@uni.edu';
+COMMIT;
+SELECT COUNT(*) AS docentes_despues FROM docente;
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -i /dev/stdin <<'SQL'
+START TRANSACTION;
+INSERT INTO docente (nombre, correo, especialidad) VALUES ('Patricia Mendoza', 'patricia.mendoza@uni.edu', 'Contabilidad');
+SELECT COUNT(*) AS docentes_dentro FROM docente;
+SAVEPOINT sv_tcl;
+UPDATE docente SET especialidad = 'Psicología' WHERE correo = 'patricia.mendoza@uni.edu';
+SELECT especialidad FROM docente WHERE correo = 'patricia.mendoza@uni.edu';
+ROLLBACK TO SAVEPOINT sv_tcl;
+SELECT especialidad FROM docente WHERE correo = 'patricia.mendoza@uni.edu';
+COMMIT;
+SELECT COUNT(*) AS docentes_despues FROM docente;
+SQL
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{INSERT 0 1} (Patricia insertada); \texttt{docentes\_dentro: 13}; \texttt{UPDATE 1}; \texttt{especialidad = Psicología}; \texttt{especialidad = Contabilidad} (restaurada al hacer \texttt{ROLLBACK TO SAVEPOINT}); \texttt{docentes\_despues: 13} (Patricia conservada al \texttt{COMMIT}). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se muestra el estado antes (12 docentes), se abre la transacción y se inserta \texttt{Patricia Mendoza} (estado dentro: 13). Se crea el \texttt{SAVEPOINT sv\_tcl}, se modifica la \texttt{especialidad} a \texttt{Psicología} y se revierte solo la modificación con \texttt{ROLLBACK TO SAVEPOINT} (la \texttt{especialidad} vuelve a \texttt{Contabilidad}); luego se \texttt{COMMIT}ea (la \texttt{Patricia} persiste: estado después 13). \textbf{Si la transacción se revertiera completamente:} la \texttt{INSERT} de Patricia no persistiría.
+
+\medskip
+
+\subsubsection{Transacción T2: DELETE + ROLLBACK}
+
+\begin{lstlisting}[language=sql]
+START TRANSACTION;
+DELETE FROM docente WHERE correo = 'patricia.mendoza@uni.edu';
+SELECT COUNT(*) AS docentes_dentro2 FROM docente;
+ROLLBACK;
+SELECT COUNT(*) AS docentes_despues2 FROM docente;
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -i /dev/stdin <<'SQL'
+START TRANSACTION;
+DELETE FROM docente WHERE correo = 'patricia.mendoza@uni.edu';
+SELECT COUNT(*) AS docentes_dentro2 FROM docente;
+ROLLBACK;
+SELECT COUNT(*) AS docentes_despues2 FROM docente;
+SQL
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{DELETE 1}; \texttt{docentes\_dentro2: 12}; \texttt{docentes\_despues2: 13} (Patricia restaurada al \texttt{ROLLBACK}). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se abre la transacción, se elimina \texttt{Patricia Mendoza} (estado dentro: 12 docentes), y al \texttt{ROLLBACK} el borrado se deshace: la base vuelve al estado anterior (13 docentes). \textbf{Ocurrió:} \texttt{DELETE 1} y \texttt{ROLLBACK}; \textbf{si fallara:} \texttt{DELETE 0} (no existía Patricia).
+
+\medskip
+
+\subsection{DCL - Lenguaje de Control de Datos}
+
+\subsubsection{CREATE ROLE \texttt{auditoria}, GRANT y REVOKE}
+
+Script:
+\begin{lstlisting}[language=sql]
+CREATE ROLE auditoria LOGIN PASSWORD 'auditoria123';
+GRANT SELECT ON estudiante TO auditoria;
+GRANT SELECT ON materia TO auditoria;
+GRANT SELECT ON docente TO auditoria;
+REVOKE SELECT ON docente FROM auditoria;
+REVOKE ALL ON TABLE docente FROM PUBLIC;
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "CREATE ROLE auditoria LOGIN PASSWORD 'auditoria123';"
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "GRANT SELECT ON estudiante TO auditoria;"
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "GRANT SELECT ON materia TO auditoria;"
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "GRANT SELECT ON docente TO auditoria;"
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "REVOKE SELECT ON docente FROM auditoria;"
+docker exec -e PGPASSWORD=adminpassword postgres_upds psql -h 127.0.0.1 -U admin -d universidad -c "REVOKE ALL ON TABLE docente FROM PUBLIC;"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{CREATE ROLE}; \texttt{GRANT} (x3); \texttt{REVOKE} (x2). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se creó el rol \texttt{auditoria} (con contraseña), se le \texttt{GRANT}ó \texttt{SELECT} sobre \texttt{estudiante} y \texttt{materia}, y se revocó su acceso a \texttt{docente} (\texttt{REVOKE SELECT} y \texttt{REVOKE ALL} sobre \texttt{PUBLIC}) para probar el \texttt{REVOKE}.
+
+\medskip
+
+\subsubsection{Prueba de acceso del usuario \texttt{auditoria} (solo lo permitido)}
+
+Acceso permitido:
+\begin{lstlisting}[language=sql]
+SELECT COUNT(*) AS estudiantes FROM estudiante;
+SELECT COUNT(*) AS materias FROM materia;
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=auditoria123 postgres_upds psql -h 127.0.0.1 -U auditoria -d universidad -c "SELECT COUNT(*) AS estudiantes FROM estudiante;"
+docker exec -e PGPASSWORD=auditoria123 postgres_upds psql -h 127.0.0.1 -U auditoria -d universidad -c "SELECT COUNT(*) AS materias FROM materia;"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{estudiantes: 10} (SELECT permitido sobre \texttt{estudiante}); \texttt{materias: 11} (SELECT permitido sobre \texttt{materia}). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} El rol \texttt{auditoria} puede \texttt{SELECT} sobre \texttt{estudiante} y \texttt{materia} porque fueron \texttt{GRANT}eados.
+
+\medskip
+
+Acceso denegido:
+\begin{lstlisting}[language=sql]
+SELECT COUNT(*) AS docentes FROM docente;
+\end{lstlisting}
+
+\noindent
+\textbf{Poner captura de pantalla aquí ejecutando:}
+\begin{lstlisting}[language=bash]
+docker exec -e PGPASSWORD=auditoria123 postgres_upds psql -h 127.0.0.1 -U auditoria -d universidad -c "SELECT COUNT(*) AS docentes FROM docente;"
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{ERROR:  permission denied for table docente}. \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} El \texttt{SELECT} sobre \texttt{docente} se deniega: el rol \texttt{auditoria} no tiene el \texttt{GRANT} y \texttt{PUBLIC} ha sido revocado. \textbf{Ocurrió:} \texttt{ERROR:  permission denied for table docente}; \textbf{si hubiera habido \texttt{GRANT} permanente de \texttt{PUBLIC}, el \texttt{REVOKE} de \texttt{auditoria} no bastaría aislarlo; la prueba confirma que solo accede a lo permitido.}
+
+\medskip
+
+\subsection{Verificación final del estado de la base}
+
+\begin{lstlisting}[language=sql]
+SELECT COUNT(*) AS docentes FROM docente;
+SELECT COUNT(*) AS estudiantes FROM estudiante;
+SELECT COUNT(*) AS inscripciones FROM inscripcion;
+SELECT to_regclass('actividad5_sede');
+\end{lstlisting}
+
+\noindent
+\textbf{Resultado esperado:} \texttt{docentes: 13}; \texttt{estudiantes: 10}; \texttt{inscripciones: 20}; \texttt{actividad5\_sede: NULL} (tabla eliminada con el \texttt{DROP TABLE}). \textbf{Resultado obtenido:} [captura].
+
+\noindent
+\textbf{Explicación breve:} Se verifica que quedaron \texttt{docentes: 13} (10 originales + \texttt{Ana Garcia} + \texttt{Ana Garcia II}); \texttt{estudiantes: 10} (\texttt{Pedro Quinteros} eliminado); \texttt{inscripciones: 20}; y \texttt{actividad5\_sede} ya no existe.
+
+\medskip

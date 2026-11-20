@@ -4,8 +4,17 @@
 
 \section{Conclusiones}
 
+El lenguaje de control de datos (DCL) fue el más difícil de ejecutar, porque:
+
 \begin{enumerate}
-  \item Primera conclusión del trabajo.
-  \item Segunda conclusión del trabajo.
-  \item Tercera conclusión del trabajo.
+  \item La administración de permisos es más amplia y detallada que el resto de lenguajes: hay que crear el rol (\texttt{CREATE ROLE}), asignar \texttt{GRANT}s, revocarlos (\texttt{REVOKE}) y verificar el acceso real desde una conexión externa, viendo tanto lo permitido como lo denegado.
+  \item El manejo de los permisos por defecto de \texttt{PUBLIC} y la confirmación de las denegaciones añaden pasos extra (ej. \texttt{REVOKE} sobre \texttt{PUBLIC} para asegurar la denegación).
+\end{enumerate}
+
+Respecto a los demás lenguajes:
+
+\begin{enumerate}
+  \item DDL: el más sencillo de formular; la parte más compleja fue la semántica de \texttt{ALTER}/\texttt{DROP} sobre objetos que ya tienen dependencias.
+  \item DML: directo; los \texttt{UPDATE}/\texttt{DELETE} con subconsultas en \texttt{WHERE} fueron sencillos de construir.
+  \item TCL: claro; el uso de \texttt{SAVEPOINT} permite revertir una parte de la transacción sin perder la \texttt{COMMIT}.
 \end{enumerate}
